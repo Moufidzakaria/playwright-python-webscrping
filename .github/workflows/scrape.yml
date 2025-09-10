@@ -2,8 +2,8 @@ name: Scrape Jumia Products
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # كل يوم مع 8h UTC
-  workflow_dispatch:     # باش تقدر تشغلو يدوي
+    - cron: '0 8 * * *'  # 
+  workflow_dispatch:     # 
 
 jobs:
   scrape:
@@ -15,7 +15,7 @@ jobs:
         ports:
           - 27018:27017
         options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -33,11 +33,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          playwright install --with-deps
 
-      - name: Show repo files (debug)
+      - name: Debug repo files
         run: ls -R
 
-      - name: Run app
+      - name: Run scraper
         env:
-          MONGO_URI: mongodb://localhost:27018
-        run: python app.py
+          MONGO_URI: "mongodb://localhost:27018"
+        run: python scraper.py
