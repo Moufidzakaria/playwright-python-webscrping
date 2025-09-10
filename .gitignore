@@ -1,0 +1,16 @@
+# Virtual environment
+playwright-env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Playwright browsers (si tu as installé via pip)
+node_modules/

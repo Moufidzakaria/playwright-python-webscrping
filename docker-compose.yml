@@ -1,0 +1,14 @@
+version: "3.9"
+
+
+services:
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27018:27017"  # خارجي 27018، داخلي 27017
+    volumes:
+      - mongo_data:/data/db
+
+
+volumes:
+  mongo_data:
