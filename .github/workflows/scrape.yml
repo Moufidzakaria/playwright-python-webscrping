@@ -41,4 +41,4 @@ jobs:
       - name: Run scraper
         env:
           MONGO_URI: "mongodb://localhost:27018"
-        run: python scraper.py
+        run: python app.py
