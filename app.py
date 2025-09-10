@@ -3,15 +3,17 @@ import csv
 import json
 from playwright.async_api import async_playwright
 from pymongo import MongoClient
+import os
 
 async def scrape_jumia(query="gas cooker", output_format="csv", max_pages=3):
-    # الاتصال بـ MongoDB في Docker
-    client = MongoClient("mongodb://localhost:27018")
+    # الاتصال بـ MongoDB في GitHub Action (env variable)
+    mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27018")
+    client = MongoClient(mongo_uri)
     db = client["jumia_db"]
     collection = db["products"]
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=True)  # headless=True pour GitHub Action
         page = await browser.new_page()
         await page.goto("https://www.jumia.co.ke/")
 
@@ -25,7 +27,6 @@ async def scrape_jumia(query="gas cooker", output_format="csv", max_pages=3):
 
         while page_number <= max_pages:
             print(f"Scraping page {page_number}...")
-            await page.wait_for_selector('article.prd')
             product_elements = await page.query_selector_all('article.prd')
 
             for product in product_elements:
@@ -46,7 +47,8 @@ async def scrape_jumia(query="gas cooker", output_format="csv", max_pages=3):
                     }
 
                     products.append(product_data)
-                except:
+                except Exception as e:
+                    print(f"Error: {e}")
                     continue
 
             next_button = await page.query_selector('a[aria-label="Next Page"]')
@@ -75,4 +77,5 @@ async def scrape_jumia(query="gas cooker", output_format="csv", max_pages=3):
 
         print(f"Scraped {len(products)} products. Data saved to {query}_products.{output_format}")
 
-asyncio.run(scrape_jumia())
+if __name__ == "__main__":
+    asyncio.run(scrape_jumia())
